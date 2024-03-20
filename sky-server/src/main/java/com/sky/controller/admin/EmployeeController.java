@@ -1,9 +1,15 @@
 package com.sky.controller.admin;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.sky.constant.JwtClaimsConstant;
+import com.sky.dto.EmployeeDTO;
 import com.sky.dto.EmployeeLoginDTO;
+import com.sky.dto.EmployeePageQueryDTO;
 import com.sky.entity.Employee;
 import com.sky.properties.JwtProperties;
+import com.sky.result.PageResult;
 import com.sky.result.Result;
 import com.sky.service.EmployeeService;
 import com.sky.utils.JwtUtil;
@@ -13,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -37,7 +44,6 @@ public class EmployeeController {
     @PostMapping("/login")
     public Result<EmployeeLoginVO> login(@RequestBody EmployeeLoginDTO employeeLoginDTO) {
         log.info("员工登录：{}", employeeLoginDTO);
-
         Employee employee = employeeService.login(employeeLoginDTO);
 
         //登录成功后，生成jwt令牌
@@ -67,5 +73,45 @@ public class EmployeeController {
     public Result<String> logout() {
         return Result.success();
     }
+
+    /**
+     * 新增员工
+     *
+     * @Param employeeDTO
+     * @return
+     */
+    @PostMapping
+    public Result<String> add(@RequestBody EmployeeDTO employeeDTO){
+        employeeService.add(employeeDTO);
+        return Result.success();
+    }
+
+    @GetMapping("/page")
+    public Result<PageResult> getAllEmployeeByPage(EmployeePageQueryDTO employeePageQueryDTO){
+        PageResult pageResult = employeeService.getAllEmployeeByPage(employeePageQueryDTO);
+
+        return Result.success(pageResult);
+    }
+
+    @PostMapping("/status/{status}")
+    public Result changeStatus(@PathVariable String status, Long id){
+        employeeService.changeStatus(status, id);
+        return Result.success();
+    }
+
+    @PutMapping
+    public Result editEmployee(@RequestBody EmployeeDTO employeeDTO){
+        log.info(employeeDTO.getName());
+        employeeService.editEmployee(employeeDTO);
+
+        return Result.success();
+    }
+
+    @GetMapping("/{id}")
+    public Result<Employee> getById(@PathVariable Long id){
+        return Result.success(employeeService.getById(id));
+    }
+
+
 
 }
