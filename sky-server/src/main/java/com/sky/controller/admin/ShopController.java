@@ -6,6 +6,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Objects;
+
 @RestController("AdminShopController")
 @RequestMapping("/admin/shop")
 public class ShopController {
@@ -25,7 +27,7 @@ public class ShopController {
     @GetMapping("/status")
     public Result<Integer> getStatus(){
         ValueOperations<String, Object> stringObjectValueOperations = redisTemplate.opsForValue();
-        Integer shopStatus = (Integer) stringObjectValueOperations.get(KEY);
+        Integer shopStatus = Integer.parseInt((String) Objects.requireNonNull(stringObjectValueOperations.get(KEY)));
         return Result.success(shopStatus);
     }
 }
